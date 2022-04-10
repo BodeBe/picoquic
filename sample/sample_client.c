@@ -567,10 +567,10 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
     gettimeofday(&stop, NULL);
     unsigned long ms = ((stop.tv_sec - start.tv_sec) * 1000) + ((stop.tv_usec - start.tv_usec) / 1000);
     unsigned long bits = client_ctx.first_stream->bytes_received * 8;
-    printf("Time: %lums", ms);
-    printf("Rate: %lubit/s", bits/ms);
-    printf("Rate: %lukb/s", (bits/ms)/1000);
-    printf("Rate: %lumb/s", (bits/ms)/1000000);
+    printf("Time: %lums\n", ms);
+    printf("Rate: %lubit/s\n", bits/(ms/1000));
+    printf("Rate: %lukb/s\n", (bits/ms));
+    printf("Rate: %lumb/s\n", (bits/ms)/1000);
 
 
 
