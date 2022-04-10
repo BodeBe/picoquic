@@ -565,8 +565,8 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
 
     /* Finish time measurements */
     gettimeofday(&stop, NULL);
-    ms = ((stop.tv_sec - start.tv_sec) * 1000) + ((stop.tv_usec - start.tv_usec) / 1000)
-    bits = client_ctx.first_stream->bytes_received * 8;
+    long ms = ((stop.tv_sec - start.tv_sec) * 1000) + ((stop.tv_usec - start.tv_usec) / 1000)
+    long bits = client_ctx.first_stream->bytes_received * 8;
     printf("Time: %dms", ms);
     printf("Rate: %dbit/s", bits/ms);
     printf("Rate: %dkb/s", (bits/ms)/1000);
