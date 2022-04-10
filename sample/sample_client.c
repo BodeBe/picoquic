@@ -447,6 +447,7 @@ static int sample_client_loop_cb(picoquic_quic_t* quic, picoquic_packet_loop_cb_
 int picoquic_sample_client(char const * server_name, int server_port, char const * default_dir,
     int nb_files, char const ** file_names)
 {
+    int local_port = 0;
     int ret = 0;
     struct sockaddr_storage server_address;
     char const* sni = PICOQUIC_SAMPLE_SNI;
@@ -550,7 +551,135 @@ int picoquic_sample_client(char const * server_name, int server_port, char const
     }
 
     /* Wait for packets */
-    ret = picoquic_packet_loop(quic, 0, server_address.ss_family, 0, 0, 0, sample_client_loop_cb, &client_ctx);
+    ret = picoquic_packet_loop(quic, local_port, server_address.ss_family, 0, 0, 0, sample_client_loop_cb, &client_ctx);
+
+    /* Done. At this stage, we could print out statistics, etc. */
+    sample_client_report(&client_ctx);
+
+    /* Save tickets and tokens, and free the QUIC context */
+    if (quic != NULL) {
+        if (picoquic_save_session_tickets(quic, ticket_store_filename) != 0) {
+            fprintf(stderr, "Could not store the saved session tickets.\n");
+        }
+        if (picoquic_save_retry_tokens(quic, token_store_filename) != 0) {
+            fprintf(stderr, "Could not save tokens to <%s>.\n", token_store_filename);
+        }
+        picoquic_free(quic);
+    }
+
+    /* Free the Client context */
+    sample_client_free_context(&client_ctx);
+
+    return ret;
+}
+
+int picoquic_sample_client_with_local_port(char const * server_name, int server_port, int local_port, char const * default_dir,
+    int nb_files, char const ** file_names)
+{
+    int ret = 0;
+    struct sockaddr_storage server_address;
+    char const* sni = PICOQUIC_SAMPLE_SNI;
+    picoquic_quic_t* quic = NULL;
+    char const* ticket_store_filename = PICOQUIC_SAMPLE_CLIENT_TICKET_STORE;
+    char const* token_store_filename = PICOQUIC_SAMPLE_CLIENT_TOKEN_STORE;
+    char const* qlog_dir = PICOQUIC_SAMPLE_CLIENT_QLOG_DIR;
+    sample_client_ctx_t client_ctx = { 0 };
+    picoquic_cnx_t* cnx = NULL;
+    uint64_t current_time = picoquic_current_time();
+
+    /* Get the server's address */
+    if (ret == 0) {
+        int is_name = 0;
+
+        ret = picoquic_get_server_address(server_name, server_port, &server_address, &is_name);
+        if (ret != 0) {
+            fprintf(stderr, "Cannot get the IP address for <%s> port <%d>", server_name, server_port);
+        }
+        else if (is_name) {
+            sni = server_name;
+        }
+    }
+
+    /* Create a QUIC context. It could be used for many connections, but in this sample we
+     * will use it for just one connection. 
+     * The sample code exercises just a small subset of the QUIC context configuration options:
+     * - use files to store tickets and tokens in order to manage retry and 0-RTT
+     * - set the congestion control algorithm to BBR
+     * - enable logging of encryption keys for wireshark debugging.
+     * - instantiate a binary log option, and log all packets.
+     */
+    if (ret == 0) {
+        quic = picoquic_create(1, NULL, NULL, NULL, PICOQUIC_SAMPLE_ALPN, NULL, NULL,
+            NULL, NULL, NULL, current_time, NULL,
+            ticket_store_filename, NULL, 0);
+
+        if (quic == NULL) {
+            fprintf(stderr, "Could not create quic context\n");
+            ret = -1;
+        }
+        else {
+            if (picoquic_load_retry_tokens(quic, token_store_filename) != 0) {
+                fprintf(stderr, "No token file present. Will create one as <%s>.\n", token_store_filename);
+            }
+
+            picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
+
+            picoquic_set_key_log_file_from_env(quic);
+            picoquic_set_qlog(quic, qlog_dir);
+            picoquic_set_log_level(quic, 1);
+        }
+    }
+
+    /* Initialize the callback context and create the connection context.
+     * We use minimal options on the client side, keeping the transport
+     * parameter values set by default for picoquic. This could be fixed later.
+     */
+
+    if (ret == 0) {
+        client_ctx.default_dir = default_dir;
+        client_ctx.file_names = file_names;
+        client_ctx.nb_files = nb_files;
+
+        printf("Starting connection to %s, port %d\n", server_name, server_port);
+
+        /* Create a client connection */
+        cnx = picoquic_create_cnx(quic, picoquic_null_connection_id, picoquic_null_connection_id,
+            (struct sockaddr*) & server_address, current_time, 0, sni, PICOQUIC_SAMPLE_ALPN, 1);
+
+        if (cnx == NULL) {
+            fprintf(stderr, "Could not create connection context\n");
+            ret = -1;
+        }
+        else {
+
+            /* Set the client callback context */
+            picoquic_set_callback(cnx, sample_client_callback, &client_ctx);
+            /* Client connection parameters could be set here, before starting the connection. */
+            ret = picoquic_start_client_cnx(cnx);
+            if (ret < 0) {
+                fprintf(stderr, "Could not activate connection\n");
+            } else {
+                /* Printing out the initial CID, which is used to identify log files */
+                picoquic_connection_id_t icid = picoquic_get_initial_cnxid(cnx);
+                printf("Initial connection ID: ");
+                for (uint8_t i = 0; i < icid.id_len; i++) {
+                    printf("%02x", icid.id[i]);
+                }
+                printf("\n");
+            }
+        }
+
+        /* Create a stream context for all the files that should be downloaded */
+        for (int i = 0; ret == 0 && i < client_ctx.nb_files; i++) {
+            ret = sample_client_create_stream(cnx, &client_ctx, i);
+            if (ret < 0) {
+                fprintf(stderr, "Could not initiate stream for fi\n");
+            }
+        }
+    }
+
+    /* Wait for packets */
+    ret = picoquic_packet_loop(quic, local_port, server_address.ss_family, 0, 0, 0, sample_client_loop_cb, &client_ctx);
 
     /* Done. At this stage, we could print out statistics, etc. */
     sample_client_report(&client_ctx);

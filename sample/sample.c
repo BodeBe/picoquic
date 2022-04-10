@@ -88,6 +88,19 @@ int main(int argc, char** argv)
             exit_code = picoquic_sample_client(argv[2], server_port, argv[4], nb_files, file_names);
         }
     }
+    else if (strcmp(argv[1], "clientLocalPort") == 0) {
+        if (argc < 7) {
+            usage(argv[0]);
+        }
+        else {
+            int server_port = get_port(argv[0], argv[3]);
+            int local_port = get_port(argv[0], argv[4]);
+            char const** file_names = (char const **)(argv + 6);
+            int nb_files = argc - 6;
+
+            exit_code = picoquic_sample_client_with_local_port(argv[2], server_port, local_port, argv[5], nb_files, file_names);
+        }
+    }
     else if (strcmp(argv[1], "server") == 0) {
         if (argc < 5) {
             usage(argv[0]);
