@@ -502,6 +502,8 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
             }
 
             picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
+            picoquic_set_default_spinbit_policy(quic, picoquic_spinbit_on);
+            picoquic_set_default_lossbit_policy(quic, picoquic_lossbit_send_receive);
 
             picoquic_set_key_log_file_from_env(quic);
             picoquic_set_qlog(quic, qlog_dir);
