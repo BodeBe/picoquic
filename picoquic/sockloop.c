@@ -109,6 +109,16 @@ static int udp_gso_available = 0;
 #endif
 #endif
 
+
+#include <signal.h>
+
+static volatile int stopSignal = 0;
+
+void signalHandler(int signal)
+{
+    stopSignal = 1;
+}
+
 int picoquic_packet_loop_open_sockets(int local_port, int local_af, SOCKET_TYPE * s_socket, int * sock_af, 
     uint16_t * sock_ports, int socket_buffer_size, int nb_sockets_max)
 {
@@ -261,9 +271,11 @@ int picoquic_packet_loop(picoquic_quic_t* quic,
         }
     }
 
+    signal(SIGINT, signalHandler);
+
     /* Wait for packets */
     /* TODO: add stopping condition, was && (!just_once || !connection_done) */
-    while (ret == 0) {
+    while (stopSignal == 0) {
         int socket_rank = -1;
         int64_t delta_t = 0;
         unsigned char received_ecn;
@@ -504,5 +516,5 @@ int picoquic_packet_loop(picoquic_quic_t* quic,
         free(send_buffer);
     }
 
-    return ret;
+    return 0;
 }

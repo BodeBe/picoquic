@@ -349,6 +349,13 @@ int sample_server_callback(picoquic_cnx_t* cnx,
             break;
         case picoquic_callback_almost_ready:
         case picoquic_callback_ready:
+            printf("New Connection - ");
+            picoquic_connection_id_t icid = picoquic_get_initial_cnxid(cnx);
+            printf("Initial cID: ");
+            for (uint8_t i = 0; i < icid.id_len; i++) {
+                printf("%02x", icid.id[i]);
+            }
+            printf("\n");
             /* Check that the transport parameters are what the sample expects */
             break;
         default:
