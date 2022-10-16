@@ -51,7 +51,15 @@ static void usage(char const * sample_name)
     fprintf(stderr, "Usage:\n");
     fprintf(stderr, "    %s client server_name port folder *queried_file\n", sample_name);
     fprintf(stderr, "or :\n");
-    fprintf(stderr, "    %s server port cert_file private_key_file folder\n", sample_name);
+    fprintf(stderr, "    %s clientLocalPort server_name server_port local_port cc_id folder *queried_file\n", sample_name);
+    fprintf(stderr, "or :\n");
+    fprintf(stderr, "    %s server port cert_file private_key_file cc_id folder\n", sample_name);
+    fprintf(stderr, "cc_id:")
+    fprintf(stderr, "0: BBR")
+    fprintf(stderr, "1: CUBIC")
+    fprintf(stderr, "2: DCUBIC")
+    fprintf(stderr, "3: FASTCC")
+    fprintf(stderr, "4: NEWRENO")
     exit(1);
 }
 
@@ -89,25 +97,25 @@ int main(int argc, char** argv)
         }
     }
     else if (strcmp(argv[1], "clientLocalPort") == 0) {
-        if (argc < 7) {
+        if (argc < 8) {
             usage(argv[0]);
         }
         else {
             int server_port = get_port(argv[0], argv[3]);
             int local_port = get_port(argv[0], argv[4]);
-            char const** file_names = (char const **)(argv + 6);
-            int nb_files = argc - 6;
+            char const** file_names = (char const **)(argv + 7);
+            int nb_files = argc - 7;
 
-            exit_code = picoquic_sample_client_with_local_port(argv[2], server_port, local_port, argv[5], nb_files, file_names);
+            exit_code = picoquic_sample_client_with_local_port(argv[2], server_port, local_port, argv[5], argv[6], nb_files, file_names);
         }
     }
     else if (strcmp(argv[1], "server") == 0) {
-        if (argc < 5) {
+        if (argc < 6) {
             usage(argv[0]);
         }
         else {
             int server_port = get_port(argv[0], argv[2]);
-            exit_code = picoquic_sample_server(server_port, argv[3], argv[4], argv[5]);
+            exit_code = picoquic_sample_server(server_port, argv[3], argv[4], argv[5], argv[6]);
         }
     }
     else

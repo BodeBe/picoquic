@@ -379,7 +379,7 @@ int sample_server_callback(picoquic_cnx_t* cnx,
  * - The loop breaks if the socket return an error. 
  */
 
-int picoquic_sample_server(int server_port, const char* server_cert, const char* server_key, const char* default_dir)
+int picoquic_sample_server(int server_port, const char* server_cert, const char* server_key, int cc_id, const char* default_dir)
 {
     /* Start: start the QUIC process with cert and key files */
     int ret = 0;
@@ -405,7 +405,30 @@ int picoquic_sample_server(int server_port, const char* server_cert, const char*
     }
     else {
         picoquic_set_cookie_mode(quic, 2);
-
+        switch (cc_id) {
+            case 0:
+                picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
+                printf("CC-Algo: BBR);
+                break;
+            case 1:
+                picoquic_set_default_congestion_algorithm(quic, picoquic_cubic_algorithm);
+                printf("CC-Algo: CUBIC);
+                break;
+            case 2:
+                picoquic_set_default_congestion_algorithm(quic, picoquic_dcubic_algorithm);
+                printf("CC-Algo: DCUBIC);
+                break;
+            case 3:
+                picoquic_set_default_congestion_algorithm(quic, picoquic_fastcc_algorithm);
+                printf("CC-Algo: FASTCC);
+                break;
+            case 4:
+                picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
+                printf("CC-Algo: NEWRENO);
+                break;
+            default:
+                return = -1;
+        }
         picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
         picoquic_set_default_spinbit_policy(quic, picoquic_spinbit_on);
         picoquic_set_default_lossbit_policy(quic, picoquic_lossbit_send_receive);

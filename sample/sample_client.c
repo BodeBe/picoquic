@@ -452,7 +452,7 @@ int picoquic_sample_client(char const * server_name, int server_port, char const
     return picoquic_sample_client_with_local_port(server_name, server_port, 0, default_dir, nb_files, file_names);
 }
 
-int picoquic_sample_client_with_local_port(char const * server_name, int server_port, int local_port, char const * default_dir,
+int picoquic_sample_client_with_local_port(char const * server_name, int server_port, int local_port, int cc_id, char const * default_dir,
     int nb_files, char const ** file_names)
 {
     int ret = 0;
@@ -500,8 +500,30 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
             if (picoquic_load_retry_tokens(quic, token_store_filename) != 0) {
                 fprintf(stderr, "No token file present. Will create one as <%s>.\n", token_store_filename);
             }
-
-            picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
+            switch (cc_id) {
+                case 0:
+                    picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
+                    printf("CC-Algo: BBR);
+                    break;
+                case 1:
+                    picoquic_set_default_congestion_algorithm(quic, picoquic_cubic_algorithm);
+                    printf("CC-Algo: CUBIC);
+                    break;
+                case 2:
+                    picoquic_set_default_congestion_algorithm(quic, picoquic_dcubic_algorithm);
+                    printf("CC-Algo: DCUBIC);
+                    break;
+                case 3:
+                    picoquic_set_default_congestion_algorithm(quic, picoquic_fastcc_algorithm);
+                    printf("CC-Algo: FASTCC);
+                    break;
+                case 3:
+                    picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
+                    printf("CC-Algo: NEWRENO);
+                    break;
+                default:
+                    return = -1;
+            }
             picoquic_set_default_spinbit_policy(quic, picoquic_spinbit_on);
             picoquic_set_default_lossbit_policy(quic, picoquic_lossbit_send_receive);
 
