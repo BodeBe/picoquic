@@ -449,7 +449,7 @@ static int sample_client_loop_cb(picoquic_quic_t* quic, picoquic_packet_loop_cb_
 int picoquic_sample_client(char const * server_name, int server_port, char const * default_dir,
     int nb_files, char const ** file_names)
 {
-    return picoquic_sample_client_with_local_port(server_name, server_port, 0, default_dir, nb_files, file_names);
+    return picoquic_sample_client_with_local_port(server_name, server_port, 0, 0, default_dir, nb_files, file_names);
 }
 
 int picoquic_sample_client_with_local_port(char const * server_name, int server_port, int local_port, int cc_id, char const * default_dir,
@@ -503,23 +503,23 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
             switch (cc_id) {
                 case 0:
                     picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
-                    printf("CC-Algo: BBR);
+                    printf("CC-Algo: BBR");
                     break;
                 case 1:
                     picoquic_set_default_congestion_algorithm(quic, picoquic_cubic_algorithm);
-                    printf("CC-Algo: CUBIC);
+                    printf("CC-Algo: CUBIC");
                     break;
                 case 2:
                     picoquic_set_default_congestion_algorithm(quic, picoquic_dcubic_algorithm);
-                    printf("CC-Algo: DCUBIC);
+                    printf("CC-Algo: DCUBIC");
                     break;
                 case 3:
                     picoquic_set_default_congestion_algorithm(quic, picoquic_fastcc_algorithm);
-                    printf("CC-Algo: FASTCC);
+                    printf("CC-Algo: FASTCC");
                     break;
                 case 3:
                     picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
-                    printf("CC-Algo: NEWRENO);
+                    printf("CC-Algo: NEWRENO");
                     break;
                 default:
                     return = -1;
