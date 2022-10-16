@@ -517,12 +517,12 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
                     picoquic_set_default_congestion_algorithm(quic, picoquic_fastcc_algorithm);
                     printf("CC-Algo: FASTCC");
                     break;
-                case 3:
+                case 4:
                     picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
                     printf("CC-Algo: NEWRENO");
                     break;
                 default:
-                    return = -1;
+                    return -1;
             }
             picoquic_set_default_spinbit_policy(quic, picoquic_spinbit_on);
             picoquic_set_default_lossbit_policy(quic, picoquic_lossbit_send_receive);

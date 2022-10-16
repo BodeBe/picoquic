@@ -422,12 +422,12 @@ int picoquic_sample_server(int server_port, const char* server_cert, const char*
                 picoquic_set_default_congestion_algorithm(quic, picoquic_fastcc_algorithm);
                 printf("CC-Algo: FASTCC");
                 break;
-            case 3:
+            case 4:
                 picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
                 printf("CC-Algo: NEWRENO");
                 break;
             default:
-                return = -1;
+                return -1;
         }
         picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
         picoquic_set_default_spinbit_policy(quic, picoquic_spinbit_on);
