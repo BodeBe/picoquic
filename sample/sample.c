@@ -54,12 +54,12 @@ static void usage(char const * sample_name)
     fprintf(stderr, "    %s clientLocalPort server_name server_port local_port cc_id folder *queried_file\n", sample_name);
     fprintf(stderr, "or :\n");
     fprintf(stderr, "    %s server port cert_file private_key_file cc_id folder\n", sample_name);
-    fprintf(stderr, "cc_id:")
-    fprintf(stderr, "0: BBR")
-    fprintf(stderr, "1: CUBIC")
-    fprintf(stderr, "2: DCUBIC")
-    fprintf(stderr, "3: FASTCC")
-    fprintf(stderr, "4: NEWRENO")
+    fprintf(stderr, "cc_id: Congestion-Control Algorithm");
+    fprintf(stderr, "0: BBR");
+    fprintf(stderr, "1: CUBIC");
+    fprintf(stderr, "2: DCUBIC");
+    fprintf(stderr, "3: FASTCC");
+    fprintf(stderr, "4: NEWRENO");
     exit(1);
 }
 
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
             char const** file_names = (char const **)(argv + 7);
             int nb_files = argc - 7;
 
-            exit_code = picoquic_sample_client_with_local_port(argv[2], server_port, local_port, argv[5], argv[6], nb_files, file_names);
+            exit_code = picoquic_sample_client_with_local_port(argv[2], server_port, local_port, atoi(argv[5]), argv[6], nb_files, file_names);
         }
     }
     else if (strcmp(argv[1], "server") == 0) {
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
         }
         else {
             int server_port = get_port(argv[0], argv[2]);
-            exit_code = picoquic_sample_server(server_port, argv[3], argv[4], argv[5], argv[6]);
+            exit_code = picoquic_sample_server(server_port, argv[3], argv[4], atoi(argv[5]), argv[6]);
         }
     }
     else
