@@ -232,56 +232,11 @@ int sample_client_callback(picoquic_cnx_t* cnx,
             }
             else
             {
-                if (stream_ctx->F == NULL) {
-                    /* Open the file to receive the data. This is done at the last possible moment,
-                     * to minimize the number of files open simultaneously.
-                     * When formatting the file_path, verify that the directory name is zero-length,
-                     * or terminated by a proper file separator.
-                     */
-                    char file_path[1024];
-                    size_t dir_len = strlen(client_ctx->default_dir);
-                    size_t file_name_len = strlen(client_ctx->file_names[stream_ctx->file_rank]);
-
-                    if (dir_len > 0 && dir_len < sizeof(file_path)) {
-                        memcpy(file_path, client_ctx->default_dir, dir_len);
-                        if (file_path[dir_len - 1] != PICOQUIC_FILE_SEPARATOR[0]) {
-                            file_path[dir_len] = PICOQUIC_FILE_SEPARATOR[0];
-                            dir_len++;
-                        }
-                    }
-
-                    if (dir_len + file_name_len + 1 >= sizeof(file_path)) {
-                        /* Unexpected: could not format the file name */
-                        fprintf(stderr, "Could not format the file path.\n");
-                        ret = -1;
-                    } else {
-                        memcpy(file_path + dir_len, client_ctx->file_names[stream_ctx->file_rank],
-                            file_name_len);
-                        file_path[dir_len + file_name_len] = 0;
-                        stream_ctx->F = picoquic_file_open(file_path, "wb");
-
-                        if (stream_ctx->F == NULL) {
-                            /* Could not open the file */
-                            fprintf(stderr, "Could not open the file: %s\n", file_path);
-                            ret = -1;
-                        }
-                    }
-                }
-
                 if (ret == 0 && length > 0) {
-                    /* write the received bytes to the file */
-                    if (fwrite(bytes, length, 1, stream_ctx->F) != 1) {
-                        /* Could not write file to disk */
-                        fprintf(stderr, "Could not write data to disk.\n");
-                        ret = -1;
-                    }
-                    else {
-                        stream_ctx->bytes_received += length;
-                    }
+                    stream_ctx->bytes_received += length;
                 }
 
                 if (ret == 0 && fin_or_event == picoquic_callback_stream_fin) {
-                    stream_ctx->F = picoquic_file_close(stream_ctx->F);
                     stream_ctx->is_stream_finished = 1;
                     client_ctx->nb_files_received++;
 
