@@ -408,25 +408,26 @@ int picoquic_sample_server(int server_port, const char* server_cert, const char*
         switch (cc_id) {
             case 0:
                 picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
-                printf("CC-Algo: BBR");
+                printf("CC-Algo: BBR\n");
                 break;
             case 1:
                 picoquic_set_default_congestion_algorithm(quic, picoquic_cubic_algorithm);
-                printf("CC-Algo: CUBIC");
+                printf("CC-Algo: CUBIC\n");
                 break;
             case 2:
                 picoquic_set_default_congestion_algorithm(quic, picoquic_dcubic_algorithm);
-                printf("CC-Algo: DCUBIC");
+                printf("CC-Algo: DCUBIC\n");
                 break;
             case 3:
                 picoquic_set_default_congestion_algorithm(quic, picoquic_fastcc_algorithm);
-                printf("CC-Algo: FASTCC");
+                printf("CC-Algo: FASTCC\n");
                 break;
             case 4:
                 picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
-                printf("CC-Algo: NEWRENO");
+                printf("CC-Algo: NEWRENO\n");
                 break;
             default:
+                printf("No such CC-Algo\n");
                 return -1;
         }
         picoquic_set_default_congestion_algorithm(quic, picoquic_bbr_algorithm);
