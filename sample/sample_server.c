@@ -426,6 +426,10 @@ int picoquic_sample_server(int server_port, const char* server_cert, const char*
                 picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
                 printf("CC-Algo: NEWRENO\n");
                 break;
+            case 5:
+                picoquic_set_default_congestion_algorithm(quic, picoquic_prague_algorithm);
+                printf("CC-Algo: Prague\n");
+                break;
             default:
                 printf("No such CC-Algo\n");
                 return -1;

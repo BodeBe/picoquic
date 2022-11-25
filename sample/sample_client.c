@@ -476,6 +476,10 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
                     picoquic_set_default_congestion_algorithm(quic, picoquic_newreno_algorithm);
                     printf("CC-Algo: NEWRENO");
                     break;
+                case 5:
+                    picoquic_set_default_congestion_algorithm(quic, picoquic_prague_algorithm);
+                    printf("CC-Algo: Prague\n");
+                    break;
                 default:
                     return -1;
             }

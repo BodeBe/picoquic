@@ -54,12 +54,13 @@ static void usage(char const * sample_name)
     fprintf(stderr, "    %s clientLocalPort server_name server_port local_port cc_id folder *queried_file\n", sample_name);
     fprintf(stderr, "or :\n");
     fprintf(stderr, "    %s server port cert_file private_key_file cc_id folder\n", sample_name);
-    fprintf(stderr, "cc_id: Congestion-Control Algorithm");
-    fprintf(stderr, "0: BBR");
-    fprintf(stderr, "1: CUBIC");
-    fprintf(stderr, "2: DCUBIC");
-    fprintf(stderr, "3: FASTCC");
-    fprintf(stderr, "4: NEWRENO");
+    fprintf(stderr, "cc_id: Congestion-Control Algorithm\n");
+    fprintf(stderr, "0: BBR\n");
+    fprintf(stderr, "1: CUBIC\n");
+    fprintf(stderr, "2: DCUBIC\n");
+    fprintf(stderr, "3: FASTCC\n");
+    fprintf(stderr, "4: NEWRENO\n");
+    fprintf(stderr, "5: PRAGUE\n");
     exit(1);
 }
 
