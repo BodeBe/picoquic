@@ -430,6 +430,10 @@ int picoquic_sample_server(int server_port, const char* server_cert, const char*
                 picoquic_set_default_congestion_algorithm(quic, picoquic_prague_algorithm);
                 printf("CC-Algo: Prague\n");
                 break;
+            case 6:
+                picoquic_set_default_congestion_algorithm(quic, picoquic_no_cc_algorithm);
+                printf("CC-Algo: No-CC\n");
+                break;
             default:
                 printf("No such CC-Algo\n");
                 return -1;

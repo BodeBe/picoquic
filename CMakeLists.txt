@@ -82,6 +82,7 @@ set(PICOQUIC_LIBRARY_FILES
     picoquic/logger.c
     picoquic/logwriter.c
     picoquic/newreno.c
+    picoquic/no_cc.c
     picoquic/packet.c
     picoquic/performance_log.c
     picoquic/picohash.c
