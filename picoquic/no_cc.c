@@ -41,8 +41,9 @@ typedef struct st_picoquic_no_cc_state_t {
 static void picoquic_no_cc_reset(picoquic_no_cc_state_t* nr_state, picoquic_path_t* path_x)
 {
     memset(nr_state, 0, sizeof(picoquic_no_cc_state_t));
+    nr_state->nrss.cwin = 62500;
+    path_x->cwin = 62500;
     picoquic_newreno_sim_reset(&nr_state->nrss);
-    path_x->cwin = nr_state->nrss.cwin;
 }
 
 static void picoquic_no_cc_init(picoquic_path_t* path_x, uint64_t current_time)
@@ -56,9 +57,12 @@ static void picoquic_no_cc_init(picoquic_path_t* path_x, uint64_t current_time)
     if (nr_state != NULL) {
         picoquic_no_cc_reset(nr_state, path_x);
         path_x->congestion_alg_state = nr_state;
+        nr_state->nrss.cwin = 62500;
+        path_x->cwin = 62500;
     }
     else {
         path_x->congestion_alg_state = NULL;
+        path_x->cwin = 62500;
     }
 }
 
@@ -157,11 +161,11 @@ static void picoquic_no_cc_notify(
             /* ignore */
             break;
         }
-        nr_state->nrss.cwin = UINT64_MAX-10;
-        path_x->cwin = UINT64_MAX-10;
+        nr_state->nrss.cwin = 62500;
+        path_x->cwin = 62500;
         /* Compute pacing data */
         picoquic_update_pacing_data(cnx, path_x, nr_state->nrss.alg_state == picoquic_newreno_alg_slow_start &&
-            nr_state->nrss.ssthresh == UINT64_MAX);
+            nr_state->nrss.ssthresh == 62500);
     }
 }
 
@@ -180,7 +184,7 @@ void picoquic_no_cc_observe(picoquic_path_t* path_x, uint64_t* cc_state, uint64_
 {
     picoquic_no_cc_state_t* nr_state = (picoquic_no_cc_state_t*)path_x->congestion_alg_state;
     *cc_state = (uint64_t)nr_state->nrss.alg_state;
-    *cc_param = (nr_state->nrss.ssthresh == UINT64_MAX) ? 0 : nr_state->nrss.ssthresh;
+    *cc_param = (nr_state->nrss.ssthresh == 62500) ? 0 : nr_state->nrss.ssthresh;
 }
 
 /* Definition record for the New Reno algorithm */
