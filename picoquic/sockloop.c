@@ -503,7 +503,7 @@ int picoquic_packet_loop(picoquic_quic_t* quic,
                 }
             }
         }
-        if (ret == 3) {
+        if (ret != 0) {
             stopSignal = 1;
         }
     }
