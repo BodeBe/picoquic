@@ -379,7 +379,7 @@ int sample_server_callback(picoquic_cnx_t* cnx,
  * - The loop breaks if the socket return an error. 
  */
 
-int picoquic_sample_server(int server_port, const char* server_cert, const char* server_key, int cc_id, const char* default_dir)
+int picoquic_sample_server(int server_port, const char* server_cert, const char* server_key, int cc_id, int spin_id, const char* default_dir)
 {
     /* Start: start the QUIC process with cert and key files */
     int ret = 0;
@@ -438,7 +438,7 @@ int picoquic_sample_server(int server_port, const char* server_cert, const char*
                 printf("No such CC-Algo\n");
                 return -1;
         }
-        picoquic_set_default_spinbit_policy(quic, picoquic_spinbit_on);
+        picoquic_set_default_spinbit_policy(quic, spin_id);
         picoquic_set_default_lossbit_policy(quic, picoquic_lossbit_send_receive);
 
         picoquic_set_qlog(quic, qlog_dir);

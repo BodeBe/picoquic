@@ -404,10 +404,10 @@ static int sample_client_loop_cb(picoquic_quic_t* quic, picoquic_packet_loop_cb_
 int picoquic_sample_client(char const * server_name, int server_port, char const * default_dir,
     int nb_files, char const ** file_names)
 {
-    return picoquic_sample_client_with_local_port(server_name, server_port, 0, 0, default_dir, nb_files, file_names);
+    return picoquic_sample_client_with_local_port(server_name, server_port, 0, 0, 3, default_dir, nb_files, file_names);
 }
 
-int picoquic_sample_client_with_local_port(char const * server_name, int server_port, int local_port, int cc_id, char const * default_dir,
+int picoquic_sample_client_with_local_port(char const * server_name, int server_port, int local_port, int cc_id, int spin_id, char const * default_dir,
     int nb_files, char const ** file_names)
 {
     int ret = 0;
@@ -487,7 +487,7 @@ int picoquic_sample_client_with_local_port(char const * server_name, int server_
                 default:
                     return -1;
             }
-            picoquic_set_default_spinbit_policy(quic, picoquic_spinbit_on);
+            picoquic_set_default_spinbit_policy(quic, spin_id);
             picoquic_set_default_lossbit_policy(quic, picoquic_lossbit_send_receive);
 
             picoquic_set_key_log_file_from_env(quic);
