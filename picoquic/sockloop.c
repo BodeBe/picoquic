@@ -503,6 +503,9 @@ int picoquic_packet_loop(picoquic_quic_t* quic,
                 }
             }
         }
+        if (ret != 0) {
+            stopSignal = 1;
+        }
     }
 
     if (ret == PICOQUIC_NO_ERROR_TERMINATE_PACKET_LOOP) {
