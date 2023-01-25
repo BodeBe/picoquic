@@ -281,7 +281,7 @@ int sample_client_callback(picoquic_cnx_t* cnx,
             client_ctx->is_disconnected = 1;
             /* Remove the application callback */
             picoquic_set_callback(cnx, NULL, NULL);
-            break;
+            return 3;
         case picoquic_callback_version_negotiation:
             /* The client did not get the right version.
              * TODO: some form of negotiation?
